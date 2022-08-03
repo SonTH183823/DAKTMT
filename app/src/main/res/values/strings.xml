@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">AppName</string>
+    <string-array name="models_array">
+        <item>HOG + SVM 2</item>
+        <item>HOG + SVM 3</item>
+        <item>YoLo v5</item>
+    </string-array>
+</resources>
