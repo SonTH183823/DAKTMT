@@ -5,11 +5,16 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.Manifest;
+import android.app.Dialog;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -23,6 +28,7 @@ import com.chaquo.python.PyObject;
 import com.chaquo.python.Python;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,12 +45,17 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     ImageView imageView;
     TextView txtView;
     Spinner spinnerModel;
+    Dialog dialog;
+    MyAsyncTask myAsyncTask;
     ArrayList<Uri> arrayList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        dialog = new Dialog(MainActivity.this, R.style.MyAlertDialogTheme);
+        dialog.setContentView(R.layout.pd_custom);
 
         choseImgBtn = findViewById(R.id.button_chose_image);
         imageView = findViewById(R.id.imageView);
@@ -89,7 +100,12 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         processBtn.setOnClickListener( view -> {
 //            Integer text = spinnerModel.getSelectedItemPosition();
 //            txtView.setText(text.toString());
-            sendMessage();
+            if(arrayList.size() == 0){
+                Toast.makeText(this, "Hãy chọn ảnh", Toast.LENGTH_SHORT).show();
+            }else {
+                myAsyncTask = new MyAsyncTask(MainActivity.this);
+                myAsyncTask.execute(arrayList.get(0));
+            }
         });
     }
 

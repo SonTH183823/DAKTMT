@@ -23,15 +23,28 @@ def convert_and_trim_bb(image, rect):
   return (startX, startY, w, h)
 
 def execute_model(inputImageUrl, upsample):
-  detector = dlib.get_frontal_face_detector()
-  image = cv2.imread(inputImageUrl)
-  image = imutils.resize(image, width=600)
-  rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-  rects = detector(rgb, upsample)
-  boxes = [convert_and_trim_bb(image, r) for r in rects]
+  try:
+    detector = dlib.get_frontal_face_detector()
+    image = cv2.imread(inputImageUrl)
+    image = imutils.resize(image, width=600)
+    rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    rects = detector(rgb, upsample)
+    boxes = [convert_and_trim_bb(image, r) for r in rects]
 
-  for (x, y, w, h) in boxes:
-	  cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)
+    for (x, y, w, h) in boxes:
+      cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)
 
-  outputImageUrl = inputImageUrl.replace("input", "output")
-  cv2.imwrite(outputImageUrl), image)
+    extension = ''
+    if inputImageUrl.find('.jpg'):
+      extension = '.jpg'
+    elif inputImageUrl.find('.png'):
+      extension = '.png'
+    elif inputImageUrl.find('.webp'):
+      extension = '.webp'
+    outputImageUrl = inputImageUrl.replace(extension, '_model_output' + extension)
+
+    cv2.imwrite(outputImageUrl, image)
+  except Exception as e:
+    return str(e)
+  else:
+    return outputImageUrl
