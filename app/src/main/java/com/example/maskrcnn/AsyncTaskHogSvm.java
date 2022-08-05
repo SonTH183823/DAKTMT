@@ -128,6 +128,7 @@ public class AsyncTaskHogSvm extends AsyncTask<Uri, Void, String>{
     }
 
     private String processRsUri(String input) {
+        Log.e("INPUT", input);
         String extension = "";
         if (input.contains(".jpg")) {
             extension = ".jpg";
@@ -139,6 +140,8 @@ public class AsyncTaskHogSvm extends AsyncTask<Uri, Void, String>{
             extension = ".webp";
         }
         String output = input.replace(extension, "_model_output" + extension);
+        Log.e("OUTPUT", output);
+
         return output;
     }
 

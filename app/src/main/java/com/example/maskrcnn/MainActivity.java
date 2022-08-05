@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     Uri uri;
     AsyncTaskHogSvm myAsyncTask;
     ArrayList<Uri> arrayList = new ArrayList<>();
-    ImageView textViewRs;
+    TextView textViewRs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         dialog = new Dialog(MainActivity.this, R.style.MyAlertDialogTheme);
         dialog.setContentView(R.layout.pd_custom);
 
-//        textViewRs = findViewById(R.id.textViewRS);
+        textViewRs = findViewById(R.id.textViewRS);
         choseImgBtn = findViewById(R.id.button_chose_image);
         imageView = findViewById(R.id.imageView);
         processBtn = findViewById(R.id.processBtn);
@@ -135,20 +135,9 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                 }
             });
 
-//    @Override
-//    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-//        super.onActivityResult(requestCode, resultCode, data);
-//        Log.e("resultCode", String.valueOf(resultCode));
-////        if(requestCode == 1080523822 && resultCode == Activity.RESULT_OK){
-////            uri = data.getData();
-////            imageView.setImageURI(uri);
-////        }else {
-////            Toast.makeText(getApplicationContext(), "No Image selected!", Toast.LENGTH_SHORT).show();
-////        }
-//    }
 
     private void imagePicker() {
-
+        textViewRs.setText("Số gương mặt: ");
         FilePickerBuilder.getInstance()
                 .setActivityTitle("Chọn ảnh")
                 .setSpan(FilePickerConst.SPAN_TYPE.FOLDER_SPAN, 3)
