@@ -1,5 +1,8 @@
 package com.example.maskrcnn;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -7,16 +10,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.Manifest;
 import android.app.Dialog;
 import android.content.Intent;
-import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -26,14 +22,19 @@ import android.widget.Toast;
 
 import com.chaquo.python.PyObject;
 import com.chaquo.python.Python;
+import com.github.drjacky.imagepicker.ImagePicker;
+import com.github.drjacky.imagepicker.constant.ImageProvider;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import droidninja.filepicker.FilePickerBuilder;
 import droidninja.filepicker.FilePickerConst;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
+import kotlin.jvm.internal.Intrinsics;
 import pub.devrel.easypermissions.AppSettingsDialog;
 import pub.devrel.easypermissions.EasyPermissions;
 
@@ -46,7 +47,8 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     TextView txtView;
     Spinner spinnerModel;
     Dialog dialog;
-    MyAsyncTask myAsyncTask;
+    Uri uri;
+    AsyncTaskHogSvm myAsyncTask;
     ArrayList<Uri> arrayList = new ArrayList<>();
 
     @Override
@@ -56,6 +58,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
         dialog = new Dialog(MainActivity.this, R.style.MyAlertDialogTheme);
         dialog.setContentView(R.layout.pd_custom);
+
 
         choseImgBtn = findViewById(R.id.button_chose_image);
         imageView = findViewById(R.id.imageView);
@@ -69,19 +72,21 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         spinnerModel.setAdapter(adapter);
 
         //Set button listener
-//        choseImgBtn.setOnClickListener( view -> {
-//            String [] strings = {Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE};
-//            if(EasyPermissions.hasPermissions(this, strings)){
-//                imagePicker();
-//            }else {
-//                EasyPermissions.requestPermissions(
-//                        this,
-//                        "Cần cung cấp quyền truy cập và thư viện cho ứng dụng!",
-//                        100,
-//                        strings
-//                );
-//            }
-//        });
+        choseImgBtn.setOnClickListener(view ->{
+            String [] strings = {Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE};
+            if(EasyPermissions.hasPermissions(this, strings)){
+                imagePicker();
+            }else {
+                EasyPermissions.requestPermissions(
+                        this,
+                        "Cần cung cấp quyền truy cập và thư viện cho ứng dụng!",
+                        100,
+                        strings
+                );
+            }
+        });
+
+
 
         imageView.setOnClickListener( view -> {
             String [] strings = {Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE};
@@ -97,22 +102,61 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             }
         });
 
+
+
         processBtn.setOnClickListener( view -> {
-//            Integer text = spinnerModel.getSelectedItemPosition();
-//            txtView.setText(text.toString());
-            if(arrayList.size() == 0){
-                Toast.makeText(this, "Hãy chọn ảnh", Toast.LENGTH_SHORT).show();
+            Integer indexSpinner = spinnerModel.getSelectedItemPosition();
+            if(uri == null){
+                Toast.makeText(this, "Bạn chưa chọn ảnh!", Toast.LENGTH_SHORT).show();
             }else {
-                myAsyncTask = new MyAsyncTask(MainActivity.this);
-                myAsyncTask.execute(arrayList.get(0));
+                if(indexSpinner == 0){
+                    myAsyncTask = new AsyncTaskHogSvm(MainActivity.this, 2);
+                    myAsyncTask.execute(uri);
+                }else if (indexSpinner == 1){
+                    myAsyncTask = new AsyncTaskHogSvm(MainActivity.this, 3);
+                    myAsyncTask.execute(uri);
+                }
             }
         });
+    }
+
+    ActivityResultLauncher<Intent> launcher =
+            registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), (ActivityResult result) -> {
+                if (result.getResultCode() == RESULT_OK) {
+                    uri = result.getData().getData();
+                    imageView.setImageURI(uri);
+                } else if (result.getResultCode() == ImagePicker.RESULT_ERROR) {
+                    Toast.makeText(getApplicationContext(), "Không có ảnh nào được chọn!", Toast.LENGTH_SHORT).show();
+                }
+            });
+
+//    @Override
+//    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+//        super.onActivityResult(requestCode, resultCode, data);
+//        Log.e("resultCode", String.valueOf(resultCode));
+////        if(requestCode == 1080523822 && resultCode == Activity.RESULT_OK){
+////            uri = data.getData();
+////            imageView.setImageURI(uri);
+////        }else {
+////            Toast.makeText(getApplicationContext(), "No Image selected!", Toast.LENGTH_SHORT).show();
+////        }
+//    }
+
+    private void imagePicker() {
+        FilePickerBuilder.getInstance()
+                .setActivityTitle("Chọn ảnh")
+                .setSpan(FilePickerConst.SPAN_TYPE.FOLDER_SPAN, 3)
+                .setSpan(FilePickerConst.SPAN_TYPE.DETAIL_SPAN, 4)
+                .setMaxCount(1)
+                .setSelectedFiles(arrayList)
+                .setActivityTheme(R.style.CustomTheme)
+                .pickPhoto(this);
     }
 
     public void sendMessage() {
         Intent intent = new Intent(this, ResultActivity.class);
         intent.setAction(Intent.ACTION_SEND);
-        intent.putExtra(Intent.EXTRA_STREAM, arrayList.get(0));
+        intent.putExtra(Intent.EXTRA_STREAM, uri);
         intent.setType("image/jpeg");
         startActivity(Intent.createChooser(intent, null));
     }
@@ -134,24 +178,30 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
         if(resultCode == RESULT_OK && data != null){
             if(requestCode == FilePickerConst.REQUEST_CODE_PHOTO){
                 arrayList = data.getParcelableArrayListExtra(FilePickerConst.KEY_SELECTED_MEDIA);
-                imageView.setImageURI(arrayList.get(0));
+                uri = arrayList.get(0);
+                imageView.setImageURI(uri);
             }
         }
     }
 
-    private void imagePicker() {
-        FilePickerBuilder.getInstance()
-                .setActivityTitle("Chọn ảnh")
-                .setSpan(FilePickerConst.SPAN_TYPE.FOLDER_SPAN, 3)
-                .setSpan(FilePickerConst.SPAN_TYPE.DETAIL_SPAN, 4)
-                .setMaxCount(1)
-                .setSelectedFiles(arrayList)
-                .setActivityTheme(R.style.CustomTheme)
-                .pickPhoto(this);
+    private void imagePicker2() {
+        ImagePicker.Companion.with(MainActivity.this)
+                .maxResultSize(512,512,true)
+                .provider(ImageProvider.BOTH) //Or bothCameraGallery()
+                .createIntentFromDialog((Function1)(new Function1(){
+                    public Object invoke(Object var1) {
+                        this.invoke((Intent) var1);
+                        return Unit.INSTANCE;
+                    }
+
+                    public final void invoke(@NotNull Intent it) {
+                        Intrinsics.checkNotNullParameter(it, "it");
+                        launcher.launch(it);
+                    }
+                }));
     }
 
 

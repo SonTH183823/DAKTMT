@@ -35,7 +35,7 @@
                 android:id="@+id/textView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="App Name"
+                android:text="Face Detection"
                 android:textColor="@color/white"
                 android:textSize="20sp"
                 android:textStyle="bold"
@@ -54,19 +54,18 @@
         android:layout_height="48dp"
         android:layout_marginStart="20dp"
         android:layout_marginBottom="10dp"
-        android:text="Chọn ảnh"
+        android:text="Chose image"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="395dp"
+        android:layout_width="match_parent"
         android:layout_height="522dp"
         android:layout_marginTop="150dp"
         android:layout_marginBottom="54dp"
         android:adjustViewBounds="true"
         android:background="@drawable/border_image"
-        android:scaleType="centerCrop"
         android:src="@drawable/ic__image_foreground"
         app:layout_constraintBottom_toTopOf="@+id/button_chose_image"
         app:layout_constraintEnd_toEndOf="parent"
@@ -81,7 +80,7 @@
         android:layout_height="48dp"
         android:layout_marginEnd="20dp"
         android:layout_marginBottom="10dp"
-        android:text="Xử lý"
+        android:text="Process"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
@@ -92,7 +91,7 @@
         android:layout_marginTop="10dp"
         android:layout_marginEnd="20dp"
         android:dropDownWidth="match_parent"
-        android:spinnerMode="dropdown"
+        android:spinnerMode="dialog"
         app:layout_constraintBottom_toTopOf="@+id/imageView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/appBarLayout2" />
@@ -105,7 +104,7 @@
         android:layout_marginTop="52dp"
         android:layout_marginBottom="38dp"
         android:lineHeight="10dp"
-        android:text="Chọn model"
+        android:text="Chose model"
         android:textAlignment="center"
         android:textColor="@color/black"
         android:textSize="16sp"

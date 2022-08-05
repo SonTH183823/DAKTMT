@@ -60,4 +60,5 @@ dependencies {
     implementation 'com.droidninja:filepicker:2.2.5'
     implementation 'com.github.bumptech.glide:glide:4.13.0'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.3'
+    implementation 'com.github.Drjacky:ImagePicker:2.1.16'
 }
