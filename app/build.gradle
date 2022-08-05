@@ -27,6 +27,10 @@ android {
                 install "imutils"
                 install "dlib"
                 install "opencv-python"
+                install "mtcnn"
+                install "matplotlib"
+                install "tensorflow"
+                install "Pillow"
             }
         }
 

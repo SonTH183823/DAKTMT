@@ -12,6 +12,7 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -50,6 +51,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     Uri uri;
     AsyncTaskHogSvm myAsyncTask;
     ArrayList<Uri> arrayList = new ArrayList<>();
+    ImageView textViewRs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,7 +61,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         dialog = new Dialog(MainActivity.this, R.style.MyAlertDialogTheme);
         dialog.setContentView(R.layout.pd_custom);
 
-
+//        textViewRs = findViewById(R.id.textViewRS);
         choseImgBtn = findViewById(R.id.button_chose_image);
         imageView = findViewById(R.id.imageView);
         processBtn = findViewById(R.id.processBtn);
@@ -115,6 +117,9 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                 }else if (indexSpinner == 1){
                     myAsyncTask = new AsyncTaskHogSvm(MainActivity.this, 3);
                     myAsyncTask.execute(uri);
+                }else {
+                    myAsyncTask = new AsyncTaskHogSvm(MainActivity.this, 0);
+                    myAsyncTask.execute(uri);
                 }
             }
         });
@@ -143,6 +148,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 //    }
 
     private void imagePicker() {
+
         FilePickerBuilder.getInstance()
                 .setActivityTitle("Chọn ảnh")
                 .setSpan(FilePickerConst.SPAN_TYPE.FOLDER_SPAN, 3)
@@ -153,13 +159,6 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                 .pickPhoto(this);
     }
 
-    public void sendMessage() {
-        Intent intent = new Intent(this, ResultActivity.class);
-        intent.setAction(Intent.ACTION_SEND);
-        intent.putExtra(Intent.EXTRA_STREAM, uri);
-        intent.setType("image/jpeg");
-        startActivity(Intent.createChooser(intent, null));
-    }
 
 
     private String getPythonFunc() {

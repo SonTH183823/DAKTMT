@@ -41,10 +41,12 @@ def execute_model(inputImageUrl, upsample):
       extension = '.png'
     elif inputImageUrl.find('.webp'):
       extension = '.webp'
-    outputImageUrl = inputImageUrl.replace(extension, '_model_output' + extension)
 
+    outputImageUrl = inputImageUrl.replace(extension, '_model_output' + extension)
     cv2.imwrite(outputImageUrl, image)
+
   except Exception as e:
     return str(e)
   else:
-    return outputImageUrl
+    # return number of detected faces
+    return len(rects)
