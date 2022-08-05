@@ -21,8 +21,6 @@ android {
 
         python {
             buildPython "C:/Users/sonso/AppData/Local/Programs/Python/Python310/python.exe"
-//            buildPython "C:/Users/sonso/AppData/Local/Programs/Python/Python310/py.exe", "-3.10"
-
             pip {
                 install "imutils"
                 install "dlib"
@@ -33,12 +31,13 @@ android {
                 install "Pillow"
             }
         }
-
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-
         ndk {
             abiFilters "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
         }
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+
     }
 
     buildTypes {
