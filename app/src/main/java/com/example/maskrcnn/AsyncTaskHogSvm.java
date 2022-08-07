@@ -62,7 +62,6 @@ public class AsyncTaskHogSvm extends AsyncTask<Uri, Void, String>{
         String numFace = hogSvmFunc(imageUri[0]);
         File file = new File(getRealPathFromURI(imageUri[0]));
         resultUri =  processRsUri(file.toString());
-//        Log.e("URI", resultUri);
         return numFace;
     }
 
